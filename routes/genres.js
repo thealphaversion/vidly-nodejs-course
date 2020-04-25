@@ -1,44 +1,28 @@
 const express = require('express');
+const mongoose = require('mongoose');
+const {Genre, validateRequest} = require('../models/genres');
+
 const router = express.Router();
 
-const genres = [{id: 1, title: "Thriller"}, {id: 2, title: "Comedy"}, {id: 3, title: "Adventure"}];
-
-function validateRequest(genre) {
-    const schema = {
-        title: Joi.string().min(3).required()
-    };
-
-    return Joi.validate(genre, schema);
-}
-
-router.get('/', (request, response) => {
-    // response.render('index', {title: 'Vidly', message: 'Hello'});
+router.get('/', async (request, response) => {
+    const genres = await Genre.find().sort('title');
     response.send(genres);
 });
 
-router.post('/', (request, response) => {
+router.post('/', async (request, response) => {
     let result = validateRequest(request.body)
     if(result.error) {
         response.status(400).send(result.error.details[0].message);
         return;
     }
 
-    const genre = {
-        id: genres.length + 1,
-        title: request.body.title
-    }
+    let genre = new Genre({ title: request.body.title });
 
-    genres.push(genre);
-    response.send(genres);
+    genre = await genre.save();
+    response.send(genre);
 });
 
-router.put('/:id', (req, res) => {
-    let genre = genres.find(g => g.id === parseInt(request.params.id));
-    if(!genre) {
-        response.status(404).send("404: Genre not found!");
-        return;
-    }
-
+router.put('/:id', async (req, res) => {
     const { error } = validateRequest(request.body);
     console.log(error);
     if(error) {
@@ -47,24 +31,31 @@ router.put('/:id', (req, res) => {
         return;
     }
 
-    genre.title = req.body.id;
-    res.send(genres);
-});
-
-router.delete('/:id', (request, response) => {
-    let genre = genres.find(g => g.id === parseInt(request.params.id));
+    const genre = await Genre.findByIdAndUpdate(req.params.id, { title: req.body.title }, {new: true});
+    
     if(!genre) {
-        response.status(404).send("404: Course not found!");
+        response.status(404).send("404: Genre not found!");
         return;
     }
 
-    // first we have to find the index of the genre we want to remove
-    let index = genres.indexOf(course);
+    res.send(genres);
+});
 
-    // then we use the splice method to delete the genre
-    genres.splice(index, 1);
-    
-    // Return the genre
+router.delete('/:id', async (request, response) => {
+    const genre = await Genre.findByIdAndRemove(req.params.id);
+    if(!genre) {
+        response.status(404).send("404: Genre not found!");
+        return;
+    }
+    response.send(genre);
+});
+
+router.get('/:id', async (req, res) => {
+    const genre = await Genre.findByIdAndRemove(req.params.id);
+    if(!genre) {
+        response.status(404).send("404: Genre not found!");
+        return;
+    }
     response.send(genre);
 });
 
