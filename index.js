@@ -1,6 +1,8 @@
 // const startupDebugger = require('debug')('app:startup');            // app:startup is a namespace given to the debug function at startup
 // const dbDebugger = require('debug')('app:db');
 
+const Joi = require('joi');
+Joi.objectId = require('joi-objectid')(Joi);
 const mongoose = require('mongoose');
 const config = require('config');
 const express = require('express');
@@ -8,6 +10,8 @@ const app = express();
 
 const genres = require('./routes/genres');
 const customers = require('./routes/customers');
+const movies = require('./routes/movies');
+const rentals = require('./routes/rentals');
 
 mongoose.connect('mongodb://localhost/vidly').then(() => {
     console.log("Connected to mongo");
@@ -21,6 +25,8 @@ app.use(express.static('public'));
 
 app.use('/api/genres', genres);
 app.use('/api/customers', customers);
+app.use('/api/movies', movies);
+app.use('/api/rentals', rentals);
 
 app.set('view engine', 'pug');
 app.set('views', './views');

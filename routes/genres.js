@@ -1,5 +1,4 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const {Genre, validateRequest} = require('../models/genres');
 
 const router = express.Router();
@@ -38,7 +37,7 @@ router.put('/:id', async (req, res) => {
         return;
     }
 
-    res.send(genres);
+    res.send(genre);
 });
 
 router.delete('/:id', async (request, response) => {
