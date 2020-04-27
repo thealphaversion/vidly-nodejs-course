@@ -1,5 +1,7 @@
 const express = require('express');
 const {Genre, validateRequest} = require('../models/genres');
+const auth = require('../middleware/auth');
+const admin = require('../middleware/admin');
 
 const router = express.Router();
 
@@ -8,7 +10,7 @@ router.get('/', async (request, response) => {
     response.send(genres);
 });
 
-router.post('/', async (request, response) => {
+router.post('/', auth, async (request, response) => {
     let result = validateRequest(request.body)
     if(result.error) {
         response.status(400).send(result.error.details[0].message);
@@ -21,7 +23,7 @@ router.post('/', async (request, response) => {
     response.send(genre);
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
     const { error } = validateRequest(request.body);
     console.log(error);
     if(error) {
@@ -40,7 +42,9 @@ router.put('/:id', async (req, res) => {
     res.send(genre);
 });
 
-router.delete('/:id', async (request, response) => {
+// we pass an array of middleware functions
+// they will be executed in order
+router.delete('/:id', [auth, admin], async (request, response) => {
     const genre = await Genre.findByIdAndRemove(req.params.id);
     if(!genre) {
         response.status(404).send("404: Genre not found!");

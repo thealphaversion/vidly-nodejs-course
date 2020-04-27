@@ -12,6 +12,13 @@ const genres = require('./routes/genres');
 const customers = require('./routes/customers');
 const movies = require('./routes/movies');
 const rentals = require('./routes/rentals');
+const users = require('./routes/users');
+const auth = require('./routes/auth');
+
+if (!config.get('jwtPrivateKey')) {
+    console.error('FATAL ERROR: jwtPrivateKey is not defined.');
+    process.exit(1);        // 0 means success, anything oother than 0 is failure
+}
 
 mongoose.connect('mongodb://localhost/vidly').then(() => {
     console.log("Connected to mongo");
@@ -27,6 +34,8 @@ app.use('/api/genres', genres);
 app.use('/api/customers', customers);
 app.use('/api/movies', movies);
 app.use('/api/rentals', rentals);
+app.use('/api/users', users);
+app.use('/api/auth', auth);
 
 app.set('view engine', 'pug');
 app.set('views', './views');
