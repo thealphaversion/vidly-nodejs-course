@@ -6,8 +6,14 @@ const admin = require('../middleware/admin');
 const router = express.Router();
 
 router.get('/', async (request, response) => {
-    const genres = await Genre.find().sort('title');
-    response.send(genres);
+    try {
+        const genres = await Genre.find().sort('title');
+        response.send(genres);
+    } catch (ex) {
+        // we use 500 => internal server error
+        // to signify something failed on the server
+        response.status(500).send('A failure occured');
+    }
 });
 
 router.post('/', auth, async (request, response) => {

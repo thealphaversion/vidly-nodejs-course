@@ -37,6 +37,8 @@ app.use('/api/rentals', rentals);
 app.use('/api/users', users);
 app.use('/api/auth', auth);
 
+app.use(function(req, res, next) {});
+
 app.set('view engine', 'pug');
 app.set('views', './views');
 
