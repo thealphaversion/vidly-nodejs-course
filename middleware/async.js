@@ -1,7 +1,7 @@
 module.exports = function asyncMiddleware(handler) {
-    return async (request, response, next) => {
+    return async (req, res, next) => {
         try {
-            await handler(request, response);            
+            await handler(req, res);            
         } catch(ex) {
             next(ex);
         }

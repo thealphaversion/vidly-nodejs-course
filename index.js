@@ -5,7 +5,7 @@ const winston = require('winston');
 const express = require('express');
 const app = express();
 
-require('./startup/logs');          // we put this first so that incase we have any errors in loading other modules, they get logged here
+require('./startup/logs')();          // we put this first so that incase we have any errors in loading other modules, they get logged here
 require('./startup/routes')(app);
 require('./startup/database')();
 require('./startup/config');
@@ -20,4 +20,6 @@ app.set('views', './views');
 // dbDebugger('Password:' + config.get('mail.password'));
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => winston.info(`Listening on port ${port}...`))
+const server = app.listen(port, () => winston.info(`Listening on port ${port}...`));
+
+module.exports = server;
